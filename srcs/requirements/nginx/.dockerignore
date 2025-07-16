@@ -1,0 +1,18 @@
+<!-- Explanation:
+
+.git, .gitignore: Exclude git repo files.
+Dockerfile, docker-compose.yml: Not needed inside the image.
+*.md, *.log: Docs and logs not needed in image.
+__pycache__/, node_modules/, tmp/: Common temp/build folders.
+.env: Local environment files. -->
+
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+*.md
+*.log
+__pycache__/
+node_modules/
+tmp/
+.env

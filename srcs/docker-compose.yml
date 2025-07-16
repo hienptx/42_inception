@@ -1,0 +1,30 @@
+# build: ./requirements/nginx can be replaced with image: nginx:alpine
+services:
+  # nginx acts as reverse proxy to PHP-FPM  
+  nginx:
+    build: 
+        context: ./requirements/nginx
+        dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "80:80" # accept http
+      - "443:443" # accept https
+  # mount filesystem to container
+    volumes:
+    # mount html files
+      - ./requirements/wordpress/html:/app
+    # mount ssl certificates
+      - ../secrets/certs:/etc/ssl/certs:ro
+
+    env_file:
+      - .env
+#   wordpress:
+#     build:
+#     dockerfile:
+#     container_name:
+
+#   mariadb:
+
+# networks:
+
+# volumes:
