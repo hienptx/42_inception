@@ -18,12 +18,20 @@ services:
 
     env_file:
       - .env
+    
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    container_name: mariadb
+    ports:
+      - "3306:3306" # accept mysql connections
+    restart: always
 #   wordpress:
 #     build:
 #     dockerfile:
 #     container_name:
 
-#   mariadb:
 
 # networks:
 

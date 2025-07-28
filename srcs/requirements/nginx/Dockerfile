@@ -4,7 +4,15 @@
 FROM alpine:3.19
 
 RUN apk update && \
-    apk add --no-cache nginx
+    apk add --no-cache nginx openssl
+
+#Generate self-signed SSL certificate
+RUN mkdir -p certs/
+    openssl req -x509 -nodes -days 365
+    -newkey rsa:2048
+    -keyout certs/privkey.pem
+    -out certs/fullchain.pem
+    -subj "/CN=hien.42.fr"
 
 # Copy nginx config files -> system-level configuration
 # syntax: <source> <destination>
