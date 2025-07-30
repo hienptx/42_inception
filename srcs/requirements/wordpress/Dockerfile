@@ -29,7 +29,7 @@ WORKDIR /var/www/html
 
 COPY http /var/www/html/
 
-ENTRYPOINT ["/app/tools/wp-entrypoint.sh"]
+# ENTRYPOINT ["/app/tools/wp-entrypoint.sh"]
 
 CMD ["php-fpm"]
 
