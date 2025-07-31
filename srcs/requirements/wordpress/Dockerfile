@@ -1,35 +1,35 @@
-FROM php:8.2-fpm
+FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y \
-    libfreetype-dev \
-    libjpeg62-turbo-dev \
-    libpng-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    libonig-dev \
-    libxml2-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        gd \
-        mysqli \
-        pdo \
-        pdo_mysql \
-        zip \
-        bcmath \
-        mbstring \
-        xml \
-        opcache
+    php8.2-fpm \
+    php8.2-common \
+    php8.2-mysql \
+    php8.2-xml \
+    php8.2-mbstring \
+    php8.2-curl \
+    php8.2-zip \
+    php8.2-gd \
+    php8.2-intl \
+    php8.2-bcmath \
+    curl unzip wget \
+ && apt-get clean
+ 
+# Download WordPress if not already there
+RUN curl -O https://wordpress.org/wordpress-6.8.2.tar.gz && \
+    mkdir -p /usr/src/wordpress && \
+    tar -xzf wordpress-6.8.2.tar.gz -C /usr/src/ && \
+    rm wordpress-6.8.2.tar.gz
 
-COPY tools/*.sh /app/tools/
-
-RUN chmod +x /app/tools/*.sh
-
+# Set working directory
 WORKDIR /var/www/html
 
-COPY http /var/www/html/
+#Copy the entrypoint script and make it executable
+COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# ENTRYPOINT ["/app/tools/wp-entrypoint.sh"]
+EXPOSE 9000
+RUN sed -i 's|^listen = .*|listen = 0.0.0.0:9000|' /etc/php/8.2/fpm/pool.d/www.conf
 
-CMD ["php-fpm"]
+ENTRYPOINT ["entrypoint.sh"]
 
+CMD ["php-fpm8.2", "-F"]

@@ -1,38 +1,24 @@
-# build: ./requirements/nginx can be replaced with image: nginx:alpine
+# version: "3.8"
+
 services:
-  # nginx acts as reverse proxy to PHP-FPM  
   nginx:
-    build: 
-        context: ./requirements/nginx
-        dockerfile: Dockerfile
-    container_name: nginx
-    ports:
-      - "80:80" # accept http
-      - "443:443" # accept https
-  # mount filesystem to container
-    volumes:
-    # mount html files
-      - ./requirements/wordpress/html:/app
-    # mount ssl certificates
-      - ../secrets/certs:/etc/ssl/certs:ro
-
-    env_file:
-      - .env
-    
-  mariadb:
     build:
-      context: ./requirements/mariadb
-      dockerfile: Dockerfile
-    container_name: mariadb
+      context: ./requirements/nginx
     ports:
-      - "3306:3306" # accept mysql connections
-    restart: always
-#   wordpress:
-#     build:
-#     dockerfile:
-#     container_name:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - wordpress
+    volumes:
+      - http-volume:/var/www/html
 
+  wordpress:
+    build:
+      context: ./requirements/wordpress
+    expose:
+      - "9000"
+    volumes:
+      - http-volume:/var/www/html
 
-# networks:
-
-# volumes:
+volumes:
+  http-volume:
