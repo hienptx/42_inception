@@ -1,35 +1,40 @@
-FROM debian:bookworm-slim
+FROM debian:bullseye-slim
 
-RUN apt-get update && apt-get install -y \
-    php8.2-fpm \
-    php8.2-common \
-    php8.2-mysql \
-    php8.2-xml \
-    php8.2-mbstring \
-    php8.2-curl \
-    php8.2-zip \
-    php8.2-gd \
-    php8.2-intl \
-    php8.2-bcmath \
-    curl unzip wget \
- && apt-get clean
- 
-# Download WordPress if not already there
-RUN curl -O https://wordpress.org/wordpress-6.8.2.tar.gz && \
-    mkdir -p /usr/src/wordpress && \
-    tar -xzf wordpress-6.8.2.tar.gz -C /usr/src/ && \
-    rm wordpress-6.8.2.tar.gz
+# Install PHP-FPM, required PHP extensions, and MariaDB client
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        php7.4-fpm \
+        php7.4-mysql \
+        php7.4-curl \
+        php7.4-gd \
+        php7.4-xml \
+        php7.4-mbstring \
+        php7.4-zip \
+        mariadb-client \
+        curl \
+        less \
+        unzip \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create directory for PHP-FPM socket
+RUN mkdir -p /run/php
+
+# Configure PHP-FPM to listen on TCP port instead of Unix socket
+RUN sed -i 's|listen = /run/php/php7.4-fpm.sock|listen = 9000|' /etc/php/7.4/fpm/pool.d/www.conf
+
+# Install WP-CLI
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
+
+# Copy custom entrypoint script
+COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Set working directory
 WORKDIR /var/www/html
 
-#Copy the entrypoint script and make it executable
-COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
 EXPOSE 9000
-RUN sed -i 's|^listen = .*|listen = 0.0.0.0:9000|' /etc/php/8.2/fpm/pool.d/www.conf
 
-ENTRYPOINT ["entrypoint.sh"]
-
-CMD ["php-fpm8.2", "-F"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["php-fpm7.4", "-F"]

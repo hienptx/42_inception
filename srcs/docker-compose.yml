@@ -22,6 +22,8 @@ services:
       context: ./requirements/wordpress
       dockerfile: Dockerfile
     container_name: wordpress
+    # Run as root user to avoid permission issues with bind mounts
+    user: root
     expose:
       - "9000"
     networks:
@@ -31,15 +33,6 @@ services:
     volumes:
       - http-volume:/var/www/html
     env_file: .env
-    secrets:
-      - db_password
-      - credentials
-    environment:
-      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
-      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
-      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
-      - WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db_password
-      - WP_ADMIN_PASSWORD_FILE=/run/secrets/credentials
     restart: on-failure
   
   mariadb:
@@ -54,12 +47,6 @@ services:
     env_file: .env
     volumes:
       - mariadb-volume:/var/lib/mysql
-    secrets:
-      - db_root_password
-      - db_password
-    environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
-      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
     restart: on-failure
 
 volumes:
@@ -67,7 +54,7 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      o: bind
+      o: bind,rw
       device: ${HOME}/data/wordpress
   mariadb-volume:
     driver: local
@@ -80,11 +67,3 @@ networks:
   inception:
     name: inception
     driver: bridge
-
-secrets:
-  db_password:
-    file: ../secrets/db_password.txt
-  db_root_password:
-    file: ../secrets/db_root_password.txt
-  credentials:
-    file: ../secrets/credentials.txt
