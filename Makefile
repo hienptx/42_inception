@@ -1,4 +1,6 @@
 DATA_DIR := $(HOME)/data
+# Extract domain name from .env file
+DOMAIN_NAME := $(shell grep DOMAIN_NAME srcs/.env | cut -d '=' -f2)
 
 .PHONY: all
 all: up
@@ -7,10 +9,21 @@ all: up
 prepare:
 	mkdir -p $(DATA_DIR)/wordpress
 	mkdir -p $(DATA_DIR)/mariadb
-# sudo chown -R $(USER):$(USER) $(DATA_DIR)
+	sudo chown -R $(USER):$(USER) $(DATA_DIR)
+
+.PHONY: set-hosts
+set-hosts:
+    @echo "Setting up domain name $(DOMAIN_NAME) in /etc/hosts..."
+    @if grep -q "$(DOMAIN_NAME)" /etc/hosts; then \
+        echo "Domain already in /etc/hosts"; \
+    else \
+        echo "Adding domain to /etc/hosts (requires sudo)"; \
+        sudo sh -c "echo '127.0.0.1 $(DOMAIN_NAME)' >> /etc/hosts"; \
+        echo "Domain $(DOMAIN_NAME) added to /etc/hosts"; \
+    fi
 
 .PHONY: up
-up: prepare
+up: prepare set-hosts
 	docker compose -f srcs/docker-compose.yml up --build -d
 
 .PHONY: down
