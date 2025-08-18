@@ -29,7 +29,9 @@ CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
 
 -- Create WordPress database user
 CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
+CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';
 GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
+GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'localhost';
 
 -- Allow root connections from anywhere (for development)
 CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
@@ -46,5 +48,5 @@ EOF
 fi
 
 echo "Starting MariaDB server..."
-# Execute the main command (mysqld)
+# Execute the main command
 exec "$@"

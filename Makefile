@@ -13,14 +13,14 @@ prepare:
 
 .PHONY: set-hosts
 set-hosts:
-    @echo "Setting up domain name $(DOMAIN_NAME) in /etc/hosts..."
-    @if grep -q "$(DOMAIN_NAME)" /etc/hosts; then \
-        echo "Domain already in /etc/hosts"; \
-    else \
-        echo "Adding domain to /etc/hosts (requires sudo)"; \
-        sudo sh -c "echo '127.0.0.1 $(DOMAIN_NAME)' >> /etc/hosts"; \
-        echo "Domain $(DOMAIN_NAME) added to /etc/hosts"; \
-    fi
+	@echo "Setting up domain name $(DOMAIN_NAME) in /etc/hosts..."
+	@if grep -q "$(DOMAIN_NAME)" /etc/hosts; then \
+		echo "Domain already in /etc/hosts"; \
+	else \
+		echo "Adding domain to /etc/hosts (requires sudo)"; \
+		sudo sh -c "echo '127.0.0.1 $(DOMAIN_NAME)' >> /etc/hosts"; \
+		echo "Domain $(DOMAIN_NAME) added to /etc/hosts"; \
+	fi
 
 .PHONY: up
 up: prepare set-hosts
