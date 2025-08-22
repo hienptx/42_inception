@@ -57,7 +57,7 @@ A Dockerfile is a text file containing instructions for building your source cod
 		
 	|Instruction | Description |
 	|----------|----------|
-	| FROM [image] | Base image/ userland OS: Defines a base for your image, a starting point, the root filesystem and environment that everything else is built on|
+	| FROM [image] | Base image/ userland OS: Defines a base for your image, a starting point, the root filesystem and environment that everything else is built on |
 	| RUN [command] | Executes any commands in a new layer on top of the current image and commits the result. RUN also has a shell form for running commands.|
 	| WORKDIR [directory] | Sets the working directory for any RUN, CMD, ENTRYPOINT, COPY, and ADD instructions that follow it in the Dockerfile. |
 	| COPY [src] [dest] | Copies new files or directories from [src] and adds them to the filesystem of the container at the path [dest]. |

@@ -29,5 +29,8 @@ EXPOSE 3306
 HEALTHCHECK --start-period=30s --interval=30s --timeout=10s --retries=3 \
     CMD mysqladmin ping -h localhost --silent || exit 1
 
+# Entrypoint is the script that initializes the database
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+
 CMD ["mysqld", "--user=mysql", "--bind-address=0.0.0.0"]

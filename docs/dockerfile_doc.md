@@ -7,7 +7,7 @@
         - Or as part of 'docker-compose' workflows via the 'build' field in 'docker-compose.yml'
 
 ## Usage
-    Inside the folde of Dockerfile
+    Inside the folder of Dockerfile
     ```bash
         docker build -t image_name .
     ```
